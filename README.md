@@ -29,3 +29,10 @@ Unity Wizard is (will be) a project made to quickly configure and set up a Unity
     - Render pipeline configurator
 * General Utilities
     - Camera to viewport view
+
+## Development Guide
+### Requirements
+
+**Unity Version**: 6000.2.7f2
+
+(the rest of this README will be completed as the project continues)
