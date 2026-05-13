@@ -4,6 +4,11 @@ using System.IO;
 namespace FolderStructure.Core {
     public class Files {
         public string BasePath { get; private set; }
+
+        /// <summary>
+        /// Represents operations for folder creation using a specified base path.
+        /// <param name="basePath">The base path from which to create other folders</param>
+        /// </summary>
         public Files(string basePath) {
             if (!Directory.Exists(basePath)) {
                 Directory.CreateDirectory(basePath);
