@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="FolderStructure.Core/FolderStructure.Core.csproj" />
+  <Project Path="FolderStructure.Core.Tests/FolderStructure.Core.Tests.csproj" />
+</Solution>
