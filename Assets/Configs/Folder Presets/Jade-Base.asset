@@ -12,4 +12,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 783651258dab84644bf0121f5bc35e86, type: 3}
   m_Name: Jade-Base
   m_EditorClassIdentifier: Assembly-CSharp::FolderPresetSO
-  folderPaths: []
+  PresetName: Base (Jade)
+  PresetDescription: Adds universally applicable folders for most projects.
+  folderPaths:
+  - Art
+  - Audio
+  - Configs
+  - Fonts
+  - Materials
+  - Scenes
+  - Scripts
+  - Shaders
+  - ThirdParty

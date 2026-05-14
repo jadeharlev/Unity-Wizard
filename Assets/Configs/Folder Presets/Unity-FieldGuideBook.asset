@@ -13,5 +13,20 @@ MonoBehaviour:
   m_Name: Unity-FieldGuideBook
   m_EditorClassIdentifier: Assembly-CSharp::FolderPresetSO
   PresetName: Field Guide Book
-  PresetDescription: From the "Tips to increase productivity with Unity 6" free e-book
-  folderPaths: []
+  PresetDescription: From the "Unity Gamedev Field Guide" e-book
+  folderPaths:
+  - Animations
+  - Audio
+  - Editor
+  - Fonts
+  - Gizmos
+  - Materials
+  - Meshes
+  - Particles
+  - Prefabs
+  - Scripts
+  - Scenes
+  - Settings
+  - Shaders
+  - Textures
+  - ThirdParty

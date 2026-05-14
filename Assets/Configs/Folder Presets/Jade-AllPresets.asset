@@ -12,6 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0473011d60a78473fac6bd2aadb9df3f, type: 3}
   m_Name: Jade-AllPresets
   m_EditorClassIdentifier: FolderStructure.Editor::FolderPresetGroupSO
-  PresetGroupName: 
-  PresetGroupDescription: 
-  IncludedPresets: []
+  PresetGroupName: All Presets (Jade)
+  PresetGroupDescription: Includes all of Jade's presets!
+  IncludedPresets:
+  - {fileID: 11400000, guid: d9ce3bdad0f74496aa72b2a0c645fa5d, type: 2}
+  - {fileID: 11400000, guid: db6c2c1dda8864510bdcefa3eed33344, type: 2}
+  - {fileID: 11400000, guid: 50350defe3b53458788536fc4b51bf7e, type: 2}

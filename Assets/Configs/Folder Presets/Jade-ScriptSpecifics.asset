@@ -12,6 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 783651258dab84644bf0121f5bc35e86, type: 3}
   m_Name: Jade-ScriptSpecifics
   m_EditorClassIdentifier: Assembly-CSharp::FolderPresetSO
-  PresetName: 
-  PresetDescription: 
-  folderPaths: []
+  PresetName: Script Specifics (Jade)
+  PresetDescription: Adds subfolders in the Scripts folder based on common groupings.
+  folderPaths:
+  - Scripts/Input
+  - Scripts/Services
+  - Scripts/Editor

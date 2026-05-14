@@ -12,4 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 783651258dab84644bf0121f5bc35e86, type: 3}
   m_Name: Jade-UIToolkit
   m_EditorClassIdentifier: Assembly-CSharp::FolderPresetSO
-  folderPaths: []
+  PresetName: UI Toolkit (Jade)
+  PresetDescription: Creates a UI Folder and subfolders for UI Toolkit.
+  folderPaths:
+  - UI
+  - UI/Screens
+  - UI/Images
+  - UI/Themes
