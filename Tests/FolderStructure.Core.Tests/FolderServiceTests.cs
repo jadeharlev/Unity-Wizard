@@ -11,7 +11,7 @@ namespace FolderStructure.Core {
 
         public FolderServiceTests() {
             basePath = Path.Combine(Path.GetTempPath(), "UnityWizardTests", Guid.NewGuid().ToString());
-            folderService = new FolderService(basePath);
+            folderService = new FolderService(basePath, createKeepFiles: true);
         }
         
         
@@ -96,6 +96,33 @@ namespace FolderStructure.Core {
             Assert.True(Directory.Exists(gustavoPath));
             Assert.True(Directory.Exists(jadePath));
             Assert.True(Directory.Exists(kamronPath));
+        }
+
+        [Fact]
+        public void CreateFolderRespectsKeepPreferences() {
+            folderService.CreateFolder("KeepFolder");
+            var path = Path.Combine(basePath, "KeepFolder");
+            Assert.True(Directory.Exists(path));
+            Assert.True(File.Exists(Path.Combine(path, ".keep")));
+            
+            var folderService2 = new FolderService(basePath, createKeepFiles: false);
+            folderService2.CreateFolder("DontKeepFolder");
+            path = Path.Combine(basePath, "DontKeepFolder");
+            Assert.True(Directory.Exists(path));
+            Assert.False(File.Exists(Path.Combine(path, ".keep")));
+        }
+        
+        [Fact]
+        public void StaticCreateFolderRespectsKeepPreferences() {
+            var path = Path.Combine(basePath, "StaticKeepFolder");
+            FolderService.CreateFolderAtPath(path, createKeepFiles: true);
+            Assert.True(Directory.Exists(path));
+            Assert.True(File.Exists(Path.Combine(path, ".keep")));
+            
+            path = Path.Combine(basePath, "StaticDontKeepFolder");
+            FolderService.CreateFolderAtPath(path, createKeepFiles: false);
+            Assert.True(Directory.Exists(path));
+            Assert.False(File.Exists(Path.Combine(path, ".keep")));
         }
 
         public void Dispose() {
