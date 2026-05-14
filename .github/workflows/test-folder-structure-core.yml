@@ -1,0 +1,35 @@
+name: Test Results.Core
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'Assets/Scripts/FolderStructure/Core/**'
+      - 'Tests/FolderStructure.Core.Tests/**'
+      - '.github/workflows/test-folder-structure-core.yml'
+  pull_request:
+    paths:
+      - 'Assets/Scripts/FolderStructure/Core/**'
+      - 'Tests/FolderStructure.Core.Tests/**'
+      - '.github/workflows/test-folder-structure-core.yml'
+
+jobs:
+  test:
+    name: FolderStructure.Core Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Restore
+        run: dotnet restore Tests/FolderStructure.Core.Tests/
+
+      - name: Build
+        run: dotnet build Tests/FolderStructure.Core.Tests/ --no-restore
+
+      - name: Test
+        run: dotnet test Tests/FolderStructure.Core.Tests/ --no-build --verbosity normal
