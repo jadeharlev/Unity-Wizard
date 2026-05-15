@@ -6,6 +6,7 @@ namespace FolderStructure.Core {
     public class FolderService {
         public string BasePath { get; private set; }
         private readonly Action<string> logWarning;
+        private readonly Action<string> logInfo;
         private bool createKeepFiles;
 
         /// <summary>
@@ -13,7 +14,7 @@ namespace FolderStructure.Core {
         /// <param name="basePath">The base path from which to create other folders</param>
         /// <param name="createKeepFiles">Whether to create ".keep" files to commit empty folders</param>
         /// </summary>
-        public FolderService(string basePath, Action<string> logWarning = null, bool createKeepFiles = true) {
+        public FolderService(string basePath, Action<string> logWarning = null, Action<string> logInfo = null, bool createKeepFiles = true) {
             if (!Directory.Exists(basePath)) {
                 Directory.CreateDirectory(basePath);
             }
@@ -22,6 +23,7 @@ namespace FolderStructure.Core {
             }
             BasePath = basePath;
             this.logWarning = logWarning ?? Console.WriteLine;
+            this.logInfo = logInfo ?? Console.WriteLine;
             this.createKeepFiles = createKeepFiles;
         }
         
@@ -42,7 +44,7 @@ namespace FolderStructure.Core {
                 }
             }
             else {
-                logWarning.Invoke("Warning: folder already existed: " + combinedPath);
+                logInfo.Invoke("Note: folder already existed: " + combinedPath);
             }
         }
 
@@ -50,17 +52,17 @@ namespace FolderStructure.Core {
         /// Creates a folder at the specified path, assuming the base path is included in the parameter.
         /// </summary>
         /// <param name="path">The relative or absolute path where the folder is to be created.</param>
-        /// <param name="logWarningMethod">Method to use to log warnings</param>
+        /// <param name="logInfoMethod">Method to use to log info</param>
         /// <param name="createKeepFiles">Whether to generate ".keep" files</param>
-        public static void CreateFolderAtPath(string path, Action<string> logWarningMethod = null, bool createKeepFiles = true) {
-            if (logWarningMethod == null) logWarningMethod = Console.WriteLine;
+        public static void CreateFolderAtPath(string path, Action<string> logInfoMethod = null, bool createKeepFiles = true) {
+            if (logInfoMethod == null) logInfoMethod = Console.WriteLine;
             if (!Directory.Exists(path)) {
                 Directory.CreateDirectory(path);
                 if (createKeepFiles) {
                     File.WriteAllText(Path.Combine(path, ".keep"), "");
                 }
             } else {
-                logWarningMethod.Invoke("Warning: folder already existed: " + path);
+                logInfoMethod.Invoke("Warning: folder already existed: " + path);
             }
         }
 
@@ -78,11 +80,11 @@ namespace FolderStructure.Core {
         /// Creates multiple folders, assuming the base path is included in each provided string.
         /// </summary>
         /// <param name="folderList">List of folders to create, using the full path from the included string</param>
-        /// <param name="logWarningMethod">Method to use to log warnings</param>
+        /// <param name="logInfoMethod">Method to use to log info</param>
         /// <param name="createKeepFiles">Whether to generate ".keep" files</param>
-        public static void BatchCreateFoldersAtPaths(IEnumerable<string> folderList, Action<string> logWarningMethod = null, bool createKeepFiles = true) {
+        public static void BatchCreateFoldersAtPaths(IEnumerable<string> folderList, Action<string> logInfoMethod = null, bool createKeepFiles = true) {
             foreach (string folder in folderList) {
-                CreateFolderAtPath(folder, logWarningMethod, createKeepFiles);
+                CreateFolderAtPath(folder, logInfoMethod, createKeepFiles);
             }
         }
     }
