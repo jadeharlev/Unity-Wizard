@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Unity-FieldGuideBook
   m_EditorClassIdentifier: Assembly-CSharp::FolderPresetSO
   PresetName: Field Guide Book
-  PresetDescription: From the "Unity Gamedev Field Guide" e-book
+  PresetDescription: From the "Unity Gamedev Field Guide" e-book.
   folderPaths:
   - Animations
   - Audio
