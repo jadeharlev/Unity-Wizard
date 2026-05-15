@@ -1,4 +1,4 @@
-name: Test Results.Core
+name: Test FolderStructure.Core
 on:
   push:
     branches: [main]
