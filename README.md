@@ -1,5 +1,10 @@
 # Unity Wizard
-Unity Wizard is (will be) a project made to quickly configure and set up a Unity project. 
+[![Test FolderStructure.Core](https://github.com/jadeharlev/Unity-Wizard/actions/workflows/test-folder-structure-core.yml/badge.svg)](https://github.com/jadeharlev/Unity-Wizard/actions/workflows/test-folder-structure-core.yml)
+
+Unity Wizard is a WIP project made to quickly configure and set up a Unity project. 
+
+## Currently Available
+- The folder scaffolding system is a work-in-progress but is currently included; see [Docs/folder-structure.md](https://github.com/jadeharlev/Unity-Wizard/blob/main/Docs/folder-structure.md) for more information.
 
 ## Intended Usage
 1. At the start of a new Unity project, open Unity Wizard to set up your project
