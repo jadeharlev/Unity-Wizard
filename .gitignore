@@ -127,3 +127,7 @@ Tests/**/obj/
 .claude/*
 
 *.fobj
+
+# Unity Wizard-Specific
+SandboxedFolder/
+/Assets/SandboxedFolder.meta
