@@ -11,6 +11,9 @@ namespace FolderStructure.Core {
 
         public FolderServiceTests() {
             basePath = Path.Combine(Path.GetTempPath(), "UnityWizardTests", Guid.NewGuid().ToString());
+            if (Directory.Exists(basePath)) {
+                Directory.Delete(basePath, true);
+            }
             folderService = new FolderService(basePath, createKeepFiles: true);
         }
         
@@ -269,10 +272,10 @@ namespace FolderStructure.Core {
         public void CanStaticBatchRenameFolders() {
             Dictionary<string, string> folderRenames = new Dictionary<string, string>
             {
-                { Path.Join(basePath, "JadeFolderRename"), Path.Join("JadeFolderRenamed") },
-                { Path.Join(basePath, "GustavoFolderRename"), Path.Join("GustavoFolderRenamed") },
-                { Path.Join(basePath, "KamronFolderRename"), Path.Join("KamronFolderRenamed") },
-                { Path.Join(basePath, "LindsayFolderRename"), Path.Join("LindsayFolderRenamed") },
+                { Path.Join(basePath, "JadeFolderRename"), Path.Join(basePath, "JadeFolderRenamed") },
+                { Path.Join(basePath, "GustavoFolderRename"), Path.Join(basePath, "GustavoFolderRenamed") },
+                { Path.Join(basePath, "KamronFolderRename"), Path.Join(basePath, "KamronFolderRenamed") },
+                { Path.Join(basePath, "LindsayFolderRename"), Path.Join(basePath, "LindsayFolderRenamed") },
             };
 
             foreach (string key in folderRenames.Keys) {
