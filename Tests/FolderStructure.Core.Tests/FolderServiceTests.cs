@@ -190,6 +190,57 @@ namespace FolderStructure.Core {
             folderService.RenameFolder(oldFolderName, newFolderName);
             Assert.False(Directory.Exists(newPath));
         }
+        
+        [Fact]
+        public void StaticFolderRenamingRemovesOriginalFolder() {
+            var renameFolderPath = Path.Combine(basePath, "FolderToRenameStatic");
+            var newFolderPath = Path.Combine(basePath, "RenamedFolderStatic");
+            
+            FolderService.CreateFolderAtPath(renameFolderPath);
+            Assert.True(Directory.Exists(renameFolderPath));
+            
+            FolderService.RenameFolderAtGivenPaths(renameFolderPath, newFolderPath);
+            Assert.False(Directory.Exists(renameFolderPath));
+            Assert.True(Directory.Exists(newFolderPath));
+            Assert.True(File.Exists(Path.Combine(newFolderPath, ".keep")));
+        }
+
+        [Fact]
+        public void CannotStaticRenameNonexistentFolder() {
+            var newFolderName = Guid.NewGuid().ToString();
+            var newPath = Path.Combine(basePath, newFolderName);
+            Assert.False(Directory.Exists(newPath));
+            FolderService.RenameFolderAtGivenPaths(Guid.NewGuid().ToString(), newPath);
+            Assert.False(Directory.Exists(newPath));
+        }
+
+        [Fact]
+        public void CannotStaticRenameFolderWithExtension() {
+            var oldFolderName = Guid.NewGuid() + ".sh";
+            var newFolderName = Guid.NewGuid().ToString();
+            var oldPath = Path.Combine(basePath, oldFolderName);
+            var newPath = Path.Combine(basePath, newFolderName);
+            
+            FolderService.CreateFolderAtPath(oldPath);
+            Assert.False(Directory.Exists(oldPath));
+            
+            folderService.RenameFolder(oldPath, newPath);
+            Assert.False(Directory.Exists(newPath));
+        }
+        
+        [Fact]
+        public void CannotStaticRenameFolderToHaveExtension() {
+            var oldFolderName = Guid.NewGuid().ToString();
+            var newFolderName = Guid.NewGuid().ToString();
+            var oldPath = Path.Combine(basePath, oldFolderName);
+            var newPath = Path.Combine(basePath, newFolderName, ".png");
+            
+            FolderService.CreateFolderAtPath(oldPath);
+            Assert.True(Directory.Exists(oldPath));
+            
+            FolderService.RenameFolderAtGivenPaths(oldPath, newPath);
+            Assert.False(Directory.Exists(newPath));
+        }
         #endregion
         
         public void Dispose() {

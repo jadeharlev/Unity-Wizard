@@ -59,6 +59,7 @@ namespace FolderStructure.Core {
         /// </summary>
         /// <param name="path">The relative or absolute path where the folder is to be created.</param>
         /// <param name="logInfoMethod">Method to use to log info</param>
+        /// <param name="logWarningMethod">Method to use to log warnings</param>
         /// <param name="createKeepFiles">Whether to generate ".keep" files</param>
         public static void CreateFolderAtPath(string path, Action<string> logInfoMethod = null, Action<string> logWarningMethod = null, bool createKeepFiles = true) {
             logInfoMethod ??= Console.WriteLine;
@@ -94,6 +95,7 @@ namespace FolderStructure.Core {
         /// </summary>
         /// <param name="folderList">List of folders to create, using the full path from the included string</param>
         /// <param name="logInfoMethod">Method to use to log info</param>
+        /// <param name="logWarningMethod">Method to use to log warnings</param>
         /// <param name="createKeepFiles">Whether to generate ".keep" files</param>
         public static void BatchCreateFoldersAtPaths(IEnumerable<string> folderList, Action<string> logInfoMethod = null, Action<string> logWarningMethod = null, bool createKeepFiles = true) {
             foreach (string folder in folderList) {
@@ -101,6 +103,11 @@ namespace FolderStructure.Core {
             }
         }
 
+        /// <summary>
+        /// Renames a folder using the given parameters.
+        /// </summary>
+        /// <param name="originalName">Original folder name</param>
+        /// <param name="newName">New folder name</param>
         public void RenameFolder(string originalName, string newName) {
             var originalPath = Path.Combine(BasePath, originalName);
             var newPath = Path.Combine(BasePath, newName);
@@ -125,6 +132,42 @@ namespace FolderStructure.Core {
             }
             
             Directory.Move(originalPath, newPath);
+            logInfo.Invoke("Renamed: " + originalPath + " to " + newPath);
+        }
+
+        /// <summary>
+        /// Renames a folder, assuming base paths are included in the provided strings.
+        /// </summary>
+        /// <param name="originalPath">Folder to rename</param>
+        /// <param name="newPath">New folder name</param>
+        /// <param name="logInfoMethod">Method to use to log info</param>
+        /// <param name="logWarningMethod">Method to use to log warnings</param>
+        public static void RenameFolderAtGivenPaths(string originalPath, string newPath, Action<string> logInfoMethod = null, Action<string> logWarningMethod = null) {
+            logInfoMethod ??= Console.WriteLine;
+            logWarningMethod ??= Console.WriteLine;
+
+            if (string.IsNullOrWhiteSpace(newPath) || string.IsNullOrWhiteSpace(originalPath)) {
+                logWarningMethod.Invoke("Aborting rename: one of the two input strings was empty.");
+                return;
+            }
+            
+            if (Path.HasExtension(originalPath) || Path.HasExtension(newPath)) {
+                logWarningMethod.Invoke("Aborting rename: file extension provided: " + originalPath + " or " + newPath);
+                return;
+            }
+
+            if (!Directory.Exists(originalPath)) {
+                logWarningMethod.Invoke("Aborting rename: folder didn't exist: " + originalPath);
+                return;
+            }
+
+            if (Directory.Exists(newPath)) {
+                logWarningMethod.Invoke("Aborting rename: folder already exists: " + newPath);
+                return;
+            }
+            
+            Directory.Move(originalPath, newPath);
+            logInfoMethod.Invoke("Renamed: " + originalPath + " to " + newPath);
         }
     }
 }
