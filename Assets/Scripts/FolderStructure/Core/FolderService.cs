@@ -169,5 +169,27 @@ namespace FolderStructure.Core {
             Directory.Move(originalPath, newPath);
             logInfoMethod.Invoke("Renamed: " + originalPath + " to " + newPath);
         }
+        
+        /// <summary>
+        /// Renames multiple folders using the base path from the object's creation.
+        /// </summary>
+        /// <param name="folderList">Map of folders to rename</param>
+        public void BatchRenameFolders(IEnumerable<(string oldName, string newName)> folderList) {
+            foreach ((string oldName, string newName) map in folderList) {
+                RenameFolder(map.oldName, map.newName);
+            }
+        }
+
+        /// <summary>
+        /// Renames multiple folders using the base path from the object's creation.
+        /// </summary>
+        /// <param name="folderList">Map of folders to rename</param>
+        /// <param name="logInfoMethod">Method to use to log info</param>
+        /// <param name="logWarningMethod">Method to use to log warnings</param>
+        public static void BatchRenameFoldersAtPaths(IEnumerable<(string oldPath, string newPath)> folderList, Action<string> logInfoMethod = null, Action<string> logWarningMethod = null) {
+            foreach ((string oldPath, string newPath) map in folderList) {
+                RenameFolderAtGivenPaths(map.oldPath, map.newPath, logInfoMethod, logWarningMethod);
+            }
+        }
     }
 }
