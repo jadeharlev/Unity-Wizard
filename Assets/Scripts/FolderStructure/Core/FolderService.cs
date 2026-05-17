@@ -7,6 +7,7 @@ namespace FolderStructure.Core {
         public string BasePath { get; private set; }
         private readonly Action<string> logWarning;
         private readonly Action<string> logInfo;
+        private readonly Action<string, string> moveDirectory;
         private bool createKeepFiles;
 
         /// <summary>
@@ -14,7 +15,7 @@ namespace FolderStructure.Core {
         /// <param name="basePath">The base path from which to create other folders</param>
         /// <param name="createKeepFiles">Whether to create ".keep" files to commit empty folders</param>
         /// </summary>
-        public FolderService(string basePath, Action<string> logWarning = null, Action<string> logInfo = null, bool createKeepFiles = true) {
+        public FolderService(string basePath, Action<string> logWarning = null, Action<string> logInfo = null, bool createKeepFiles = true, Action<string, string> moveDirectory = null) {
             if (!Directory.Exists(basePath)) {
                 Directory.CreateDirectory(basePath);
             }
@@ -24,6 +25,7 @@ namespace FolderStructure.Core {
             BasePath = basePath;
             this.logWarning = logWarning ?? Console.WriteLine;
             this.logInfo = logInfo ?? Console.WriteLine;
+            this.moveDirectory = moveDirectory ?? Directory.Move;
             this.createKeepFiles = createKeepFiles;
         }
         
@@ -131,7 +133,7 @@ namespace FolderStructure.Core {
                 return;
             }
             
-            Directory.Move(originalPath, newPath);
+            moveDirectory(originalPath, newPath);
             logInfo.Invoke("Renamed: " + originalPath + " to " + newPath);
         }
 
