@@ -241,6 +241,52 @@ namespace FolderStructure.Core {
             FolderService.RenameFolderAtGivenPaths(oldPath, newPath);
             Assert.False(Directory.Exists(newPath));
         }
+
+        [Fact]
+        public void CanBatchRenameFolders() {
+            Dictionary<string, string> folderRenames = new Dictionary<string, string>
+            {
+                { "JadeFolderRename", "JadeFolderRenamed" },
+                { "GustavoFolderRename", "GustavoFolderRenamed" },
+                { "KamronFolderRename", "KamronFolderRenamed" },
+                { "LindsayFolderRename", "LindsayFolderRenamed" },
+            };
+
+            foreach (string key in folderRenames.Keys) {
+                folderService.CreateFolder(key);
+            }
+
+            foreach (var pair in folderRenames) {
+                Assert.True(Directory.Exists(Path.Join(basePath, pair.Key)));
+                Assert.False(Directory.Exists(Path.Join(basePath, pair.Value)));
+                folderService.RenameFolder(pair.Key, pair.Value);
+                Assert.True(Directory.Exists(Path.Join(basePath, pair.Value)));
+                Assert.False(Directory.Exists(Path.Join(basePath, pair.Key)));
+            }
+        }
+        
+        [Fact]
+        public void CanStaticBatchRenameFolders() {
+            Dictionary<string, string> folderRenames = new Dictionary<string, string>
+            {
+                { Path.Join(basePath, "JadeFolderRename"), Path.Join("JadeFolderRenamed") },
+                { Path.Join(basePath, "GustavoFolderRename"), Path.Join("GustavoFolderRenamed") },
+                { Path.Join(basePath, "KamronFolderRename"), Path.Join("KamronFolderRenamed") },
+                { Path.Join(basePath, "LindsayFolderRename"), Path.Join("LindsayFolderRenamed") },
+            };
+
+            foreach (string key in folderRenames.Keys) {
+                FolderService.CreateFolderAtPath(key);
+            }
+
+            foreach (var pair in folderRenames) {
+                Assert.True(Directory.Exists(pair.Key));
+                Assert.False(Directory.Exists(pair.Value));
+                FolderService.RenameFolderAtGivenPaths(pair.Key, pair.Value);
+                Assert.True(Directory.Exists(pair.Value));
+                Assert.False(Directory.Exists(pair.Key));
+            }
+        }
         #endregion
         
         public void Dispose() {
