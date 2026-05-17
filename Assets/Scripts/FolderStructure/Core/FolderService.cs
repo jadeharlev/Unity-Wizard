@@ -37,6 +37,12 @@ namespace FolderStructure.Core {
                 logWarning.Invoke("Warning: attempted path escape: " + path);
                 return;
             }
+            
+            if (Path.HasExtension(path)) {
+                logWarning.Invoke("Aborting rename: file extension provided: " + path);
+                return;
+            }
+            
             if (!Directory.Exists(combinedPath)) {
                 Directory.CreateDirectory(combinedPath);
                 if (createKeepFiles) {
@@ -54,8 +60,15 @@ namespace FolderStructure.Core {
         /// <param name="path">The relative or absolute path where the folder is to be created.</param>
         /// <param name="logInfoMethod">Method to use to log info</param>
         /// <param name="createKeepFiles">Whether to generate ".keep" files</param>
-        public static void CreateFolderAtPath(string path, Action<string> logInfoMethod = null, bool createKeepFiles = true) {
-            if (logInfoMethod == null) logInfoMethod = Console.WriteLine;
+        public static void CreateFolderAtPath(string path, Action<string> logInfoMethod = null, Action<string> logWarningMethod = null, bool createKeepFiles = true) {
+            logInfoMethod ??= Console.WriteLine;
+            logWarningMethod ??= Console.WriteLine;
+            
+            if (Path.HasExtension(path)) {
+                logWarningMethod.Invoke("Aborting rename: file extension provided: " + path);
+                return;
+            }
+            
             if (!Directory.Exists(path)) {
                 Directory.CreateDirectory(path);
                 if (createKeepFiles) {
@@ -82,10 +95,36 @@ namespace FolderStructure.Core {
         /// <param name="folderList">List of folders to create, using the full path from the included string</param>
         /// <param name="logInfoMethod">Method to use to log info</param>
         /// <param name="createKeepFiles">Whether to generate ".keep" files</param>
-        public static void BatchCreateFoldersAtPaths(IEnumerable<string> folderList, Action<string> logInfoMethod = null, bool createKeepFiles = true) {
+        public static void BatchCreateFoldersAtPaths(IEnumerable<string> folderList, Action<string> logInfoMethod = null, Action<string> logWarningMethod = null, bool createKeepFiles = true) {
             foreach (string folder in folderList) {
-                CreateFolderAtPath(folder, logInfoMethod, createKeepFiles);
+                CreateFolderAtPath(folder, logInfoMethod, logWarningMethod, createKeepFiles);
             }
+        }
+
+        public void RenameFolder(string originalName, string newName) {
+            var originalPath = Path.Combine(BasePath, originalName);
+            var newPath = Path.Combine(BasePath, newName);
+            if (Path.IsPathRooted(newName) || newName.Contains("..")) {
+                logWarning.Invoke("Aborting rename: attempted path escape: " + newName);
+                return;
+            }
+
+            if (Path.HasExtension(originalPath) || Path.HasExtension(newPath)) {
+                logWarning.Invoke("Aborting rename: file extension provided: " + originalPath + " or " + newName);
+                return;
+            }
+
+            if (!Directory.Exists(originalPath)) {
+                logWarning.Invoke("Aborting rename: folder didn't exist: " + originalPath);
+                return;
+            }
+
+            if (Directory.Exists(newPath)) {
+                logWarning.Invoke("Aborting rename: folder already exists: " + newPath);
+                return;
+            }
+            
+            Directory.Move(originalPath, newPath);
         }
     }
 }

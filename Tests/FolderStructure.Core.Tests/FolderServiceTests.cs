@@ -14,7 +14,7 @@ namespace FolderStructure.Core {
             folderService = new FolderService(basePath, createKeepFiles: true);
         }
         
-        
+        #region Folder Creation
         [Fact]
         public void BasePathIsUsedForNewFolders() {
             folderService.CreateFolder("CustomFolder");
@@ -125,6 +125,73 @@ namespace FolderStructure.Core {
             Assert.False(File.Exists(Path.Combine(path, ".keep")));
         }
 
+        [Fact]
+        public void CreateFolderBlocksExtensions() {
+            var folderName = "ExtensionFolder.sh";
+            var path = Path.Combine(basePath, folderName);
+            folderService.CreateFolder(folderName);
+            Assert.False(Directory.Exists(path));
+        }
+        
+        [Fact]
+        public void StaticCreateFolderBlocksExtensions() {
+            var folderName = "ExtensionFolder.sh";
+            var path = Path.Combine(basePath, folderName);
+            FolderService.CreateFolderAtPath(path);
+            Assert.False(Directory.Exists(path));
+        }
+        #endregion
+        
+        #region Renaming
+
+        [Fact]
+        public void FolderRenamingRemovesOriginalFolder() {
+            folderService.CreateFolder("FolderToRename");
+            Assert.True(Directory.Exists(Path.Combine(basePath, "FolderToRename")));
+            folderService.RenameFolder("FolderToRename", "RenamedFolder");
+            Assert.False(Directory.Exists(Path.Combine(basePath, "FolderToRename")));
+            Assert.True(Directory.Exists(Path.Combine(basePath, "RenamedFolder")));
+            Assert.True(File.Exists(Path.Combine(basePath, "RenamedFolder", ".keep")));
+        }
+
+        [Fact]
+        public void CannotRenameNonexistentFolder() {
+            var newFolderName = Guid.NewGuid().ToString();
+            var newPath = Path.Combine(basePath, newFolderName);
+            Assert.False(Directory.Exists(newPath));
+            folderService.RenameFolder(Guid.NewGuid().ToString(), newFolderName);
+            Assert.False(Directory.Exists(newPath));
+        }
+
+        [Fact]
+        public void CannotRenameFolderWithExtension() {
+            var oldFolderName = Guid.NewGuid() + ".sh";
+            var newFolderName = Guid.NewGuid().ToString();
+            var oldPath = Path.Combine(basePath, oldFolderName);
+            var newPath = Path.Combine(basePath, newFolderName);
+            
+            folderService.CreateFolder(oldFolderName);
+            Assert.False(Directory.Exists(oldPath));
+            
+            folderService.RenameFolder(oldFolderName, newFolderName);
+            Assert.False(Directory.Exists(newPath));
+        }
+        
+        [Fact]
+        public void CannotRenameFolderToHaveExtension() {
+            var oldFolderName = Guid.NewGuid().ToString();
+            var newFolderName = Guid.NewGuid().ToString();
+            var oldPath = Path.Combine(basePath, oldFolderName);
+            var newPath = Path.Combine(basePath, newFolderName, ".png");
+            
+            folderService.CreateFolder(oldFolderName);
+            Assert.True(Directory.Exists(oldPath));
+            
+            folderService.RenameFolder(oldFolderName, newFolderName);
+            Assert.False(Directory.Exists(newPath));
+        }
+        #endregion
+        
         public void Dispose() {
             if (Directory.Exists(basePath)) {
                 Directory.Delete(basePath, true);
