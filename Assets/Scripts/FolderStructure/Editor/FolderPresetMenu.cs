@@ -17,6 +17,27 @@ namespace FolderStructure.Editor {
 
         [MenuItem("Assets/Unity Wizard/Run Folder Preset (temp)", false)]
         private static void Run() {
+            var folderService = InitializeFolderService();
+
+            if (Selection.activeObject is FolderPresetSO presetSO) {
+                RenameAndCreateFoldersFromPreset(presetSO, folderService);
+            } else if (Selection.activeObject is FolderPresetGroupSO presetGroupSO) {
+                foreach (FolderPresetSO preset in presetGroupSO.IncludedPresets) {
+                    RenameAndCreateFoldersFromPreset(preset, folderService);
+                }
+            }
+            
+            AssetDatabase.Refresh();
+        }
+
+        private static void RenameAndCreateFoldersFromPreset(FolderPresetSO presetSO, FolderService folderService) {
+            CreateFoldersFromPreset(presetSO, folderService);
+            if (presetSO.foldersToRename.Count > 0) {
+                RenameFoldersFromPreset(presetSO, folderService);
+            }
+        }
+
+        private static FolderService InitializeFolderService() {
             FolderService folderService;
             if (doSandbox) {
                 folderService = new FolderService(Path.Join(Application.dataPath, "SandboxedFolder"), Debug.LogWarning,
@@ -26,18 +47,7 @@ namespace FolderStructure.Editor {
                     AssetDatabaseMover.Move);
             }
 
-            if (Selection.activeObject is FolderPresetSO presetSO) {
-                CreateFoldersFromPreset(presetSO, folderService);
-                if (presetSO.foldersToRename.Count > 0) {
-                    RenameFoldersFromPreset(presetSO, folderService);
-                }
-            } else if (Selection.activeObject is FolderPresetGroupSO presetGroupSO) {
-                foreach (FolderPresetSO preset in presetGroupSO.IncludedPresets) {
-                    CreateFoldersFromPreset(preset, folderService);
-                }
-            }
-            
-            AssetDatabase.Refresh();
+            return folderService;
         }
 
         private static void RenameFoldersFromPreset(FolderPresetSO presetSO, FolderService folderService) {
