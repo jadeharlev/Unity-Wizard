@@ -9,10 +9,13 @@ public class FolderPresetSO : ScriptableObject {
     [TextArea]
     public string PresetDescription;
 
+    [Header("Folder Renames (first)")]
+    [SerializeField]
+    public List<RenamePair> foldersToRename = new();
+    
+    [Header("Folders to create (second)")]
     public List<string> folderPaths = new List<string>();
     
-    [SerializeField]
-    public List<RenamePair> foldersToRename = new(); 
 }
 
 [Serializable]
