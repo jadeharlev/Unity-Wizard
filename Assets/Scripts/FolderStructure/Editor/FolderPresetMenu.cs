@@ -18,16 +18,22 @@ namespace FolderStructure.Editor {
         [MenuItem("Assets/Unity Wizard/Run Folder Preset (temp)", false)]
         private static void Run() {
             var folderService = InitializeFolderService();
+            ProcessPresetObjects(folderService);
+            AssetDatabase.Refresh();
+        }
 
+        private static void ProcessPresetObjects(FolderService folderService) {
             if (Selection.activeObject is FolderPresetSO presetSO) {
                 RenameAndCreateFoldersFromPreset(presetSO, folderService);
             } else if (Selection.activeObject is FolderPresetGroupSO presetGroupSO) {
-                foreach (FolderPresetSO preset in presetGroupSO.IncludedPresets) {
-                    RenameAndCreateFoldersFromPreset(preset, folderService);
-                }
+                ExecutePresetGroup(presetGroupSO, folderService);
             }
-            
-            AssetDatabase.Refresh();
+        }
+
+        private static void ExecutePresetGroup(FolderPresetGroupSO presetGroupSO, FolderService folderService) {
+            foreach (FolderPresetSO preset in presetGroupSO.IncludedPresets) {
+                RenameAndCreateFoldersFromPreset(preset, folderService);
+            }
         }
 
         private static void RenameAndCreateFoldersFromPreset(FolderPresetSO presetSO, FolderService folderService) {
