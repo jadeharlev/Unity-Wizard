@@ -10,13 +10,16 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 783651258dab84644bf0121f5bc35e86, type: 3}
-  m_Name: Jade-UIToolkit
-  m_EditorClassIdentifier: Assembly-CSharp::FolderPresetSO
-  PresetName: UI Toolkit (Jade)
-  PresetDescription: Creates a UI Folder and subfolders for UI Toolkit.
+  m_Name: FolderRenameTest
+  m_EditorClassIdentifier: FolderStructure.Editor::FolderPresetSO
+  PresetName: Rename Test
+  PresetDescription: 
   folderPaths:
-  - UI
-  - UI/Screens
-  - UI/Images
-  - UI/Themes
-  foldersToRename: []
+  - Test Folder
+  foldersToRename:
+  - OldName: Test Folder
+    NewName: 00 Test Folder
+  - OldName: Test Folder
+    NewName: 01 Test Folder
+  - OldName: 00 Test Folder
+    NewName: 01 Test Folder

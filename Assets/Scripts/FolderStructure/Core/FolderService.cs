@@ -7,6 +7,7 @@ namespace FolderStructure.Core {
         public string BasePath { get; private set; }
         private readonly Action<string> logWarning;
         private readonly Action<string> logInfo;
+        private readonly Action<string, string> moveDirectory;
         private bool createKeepFiles;
 
         /// <summary>
@@ -14,7 +15,7 @@ namespace FolderStructure.Core {
         /// <param name="basePath">The base path from which to create other folders</param>
         /// <param name="createKeepFiles">Whether to create ".keep" files to commit empty folders</param>
         /// </summary>
-        public FolderService(string basePath, Action<string> logWarning = null, Action<string> logInfo = null, bool createKeepFiles = true) {
+        public FolderService(string basePath, Action<string> logWarning = null, Action<string> logInfo = null, bool createKeepFiles = true, Action<string, string> moveDirectory = null) {
             if (!Directory.Exists(basePath)) {
                 Directory.CreateDirectory(basePath);
             }
@@ -24,6 +25,7 @@ namespace FolderStructure.Core {
             BasePath = basePath;
             this.logWarning = logWarning ?? Console.WriteLine;
             this.logInfo = logInfo ?? Console.WriteLine;
+            this.moveDirectory = moveDirectory ?? Directory.Move;
             this.createKeepFiles = createKeepFiles;
         }
         
@@ -37,6 +39,12 @@ namespace FolderStructure.Core {
                 logWarning.Invoke("Warning: attempted path escape: " + path);
                 return;
             }
+            
+            if (Path.HasExtension(path)) {
+                logWarning.Invoke("Aborting rename: file extension provided: " + path);
+                return;
+            }
+            
             if (!Directory.Exists(combinedPath)) {
                 Directory.CreateDirectory(combinedPath);
                 if (createKeepFiles) {
@@ -53,9 +61,17 @@ namespace FolderStructure.Core {
         /// </summary>
         /// <param name="path">The relative or absolute path where the folder is to be created.</param>
         /// <param name="logInfoMethod">Method to use to log info</param>
+        /// <param name="logWarningMethod">Method to use to log warnings</param>
         /// <param name="createKeepFiles">Whether to generate ".keep" files</param>
-        public static void CreateFolderAtPath(string path, Action<string> logInfoMethod = null, bool createKeepFiles = true) {
-            if (logInfoMethod == null) logInfoMethod = Console.WriteLine;
+        public static void CreateFolderAtPath(string path, Action<string> logInfoMethod = null, Action<string> logWarningMethod = null, bool createKeepFiles = true) {
+            logInfoMethod ??= Console.WriteLine;
+            logWarningMethod ??= Console.WriteLine;
+            
+            if (Path.HasExtension(path)) {
+                logWarningMethod.Invoke("Aborting rename: file extension provided: " + path);
+                return;
+            }
+            
             if (!Directory.Exists(path)) {
                 Directory.CreateDirectory(path);
                 if (createKeepFiles) {
@@ -81,10 +97,100 @@ namespace FolderStructure.Core {
         /// </summary>
         /// <param name="folderList">List of folders to create, using the full path from the included string</param>
         /// <param name="logInfoMethod">Method to use to log info</param>
+        /// <param name="logWarningMethod">Method to use to log warnings</param>
         /// <param name="createKeepFiles">Whether to generate ".keep" files</param>
-        public static void BatchCreateFoldersAtPaths(IEnumerable<string> folderList, Action<string> logInfoMethod = null, bool createKeepFiles = true) {
+        public static void BatchCreateFoldersAtPaths(IEnumerable<string> folderList, Action<string> logInfoMethod = null, Action<string> logWarningMethod = null, bool createKeepFiles = true) {
             foreach (string folder in folderList) {
-                CreateFolderAtPath(folder, logInfoMethod, createKeepFiles);
+                CreateFolderAtPath(folder, logInfoMethod, logWarningMethod, createKeepFiles);
+            }
+        }
+
+        /// <summary>
+        /// Renames a folder using the given parameters.
+        /// </summary>
+        /// <param name="originalName">Original folder name</param>
+        /// <param name="newName">New folder name</param>
+        public void RenameFolder(string originalName, string newName) {
+            var originalPath = Path.Combine(BasePath, originalName);
+            var newPath = Path.Combine(BasePath, newName);
+            if (Path.IsPathRooted(newName) || newName.Contains("..")) {
+                logWarning.Invoke("Aborting rename: attempted path escape: " + newName);
+                return;
+            }
+
+            if (Path.HasExtension(originalPath) || Path.HasExtension(newPath)) {
+                logWarning.Invoke("Aborting rename: file extension provided: " + originalPath + " or " + newName);
+                return;
+            }
+
+            if (!Directory.Exists(originalPath)) {
+                logWarning.Invoke("Aborting rename: folder didn't exist: " + originalPath);
+                return;
+            }
+
+            if (Directory.Exists(newPath)) {
+                logWarning.Invoke("Aborting rename: folder already exists: " + newPath);
+                return;
+            }
+            
+            moveDirectory(originalPath, newPath);
+            logInfo.Invoke("Renamed: " + originalPath + " to " + newPath);
+        }
+
+        /// <summary>
+        /// Renames a folder, assuming base paths are included in the provided strings.
+        /// </summary>
+        /// <param name="originalPath">Folder to rename</param>
+        /// <param name="newPath">New folder name</param>
+        /// <param name="logInfoMethod">Method to use to log info</param>
+        /// <param name="logWarningMethod">Method to use to log warnings</param>
+        public static void RenameFolderAtGivenPaths(string originalPath, string newPath, Action<string> logInfoMethod = null, Action<string> logWarningMethod = null) {
+            logInfoMethod ??= Console.WriteLine;
+            logWarningMethod ??= Console.WriteLine;
+
+            if (string.IsNullOrWhiteSpace(newPath) || string.IsNullOrWhiteSpace(originalPath)) {
+                logWarningMethod.Invoke("Aborting rename: one of the two input strings was empty.");
+                return;
+            }
+            
+            if (Path.HasExtension(originalPath) || Path.HasExtension(newPath)) {
+                logWarningMethod.Invoke("Aborting rename: file extension provided: " + originalPath + " or " + newPath);
+                return;
+            }
+
+            if (!Directory.Exists(originalPath)) {
+                logWarningMethod.Invoke("Aborting rename: folder didn't exist: " + originalPath);
+                return;
+            }
+
+            if (Directory.Exists(newPath)) {
+                logWarningMethod.Invoke("Aborting rename: folder already exists: " + newPath);
+                return;
+            }
+            
+            Directory.Move(originalPath, newPath);
+            logInfoMethod.Invoke("Renamed: " + originalPath + " to " + newPath);
+        }
+        
+        /// <summary>
+        /// Renames multiple folders using the base path from the object's creation.
+        /// </summary>
+        /// <param name="folderList">Map of folders to rename</param>
+        public void BatchRenameFolders(IEnumerable<(string oldName, string newName)> folderList) {
+            foreach ((string oldName, string newName) map in folderList) {
+                RenameFolder(map.oldName, map.newName);
+            }
+        }
+
+        /// <summary>
+        /// Renames multiple folders using the base path from the object's creation.
+        /// </summary>
+        /// <param name="folderList">Map of folders to rename</param>
+        /// <param name="logInfoMethod">Method to use to log info</param>
+        /// <param name="logWarningMethod">Method to use to log warnings</param>
+        public static void BatchRenameFoldersAtPaths(IEnumerable<(string oldPath, string newPath)> folderList, Action<string> logInfoMethod = null, Action<string> logWarningMethod = null) {
+            foreach ((string oldPath, string newPath) map in folderList) {
+                RenameFolderAtGivenPaths(map.oldPath, map.newPath, logInfoMethod, logWarningMethod);
             }
         }
     }

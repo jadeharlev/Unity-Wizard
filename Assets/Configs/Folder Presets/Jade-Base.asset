@@ -24,3 +24,12 @@ MonoBehaviour:
   - Scripts
   - Shaders
   - ThirdParty
+  foldersToRename:
+  - OldName: Scripts
+    NewName: 00 Scripts
+  - OldName: Scenes
+    NewName: 01 Scenes
+  - OldName: Configs
+    NewName: 02 Configs
+  - OldName: Settings
+    NewName: 03 Settings
