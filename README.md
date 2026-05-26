@@ -38,6 +38,6 @@ Unity Wizard is a WIP project made to quickly configure and set up a Unity proje
 ## Development Guide
 ### Requirements
 
-**Unity Version**: 6000.2.7f2
+**Unity Version**: 6000.3.16f1
 
 (the rest of this README will be completed as the project continues)
